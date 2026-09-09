@@ -22,11 +22,11 @@ Ridgeback + Kinova 프로젝트에서 **계획 궤적을 Gazebo와 실물 Kinova
 
 [MP4 · 16초 · 원본 편집 속도 · 무음](assets/kinova-demo-1x.mp4) · [정지 화면](assets/kinova-overview.jpg)
 
-두 화면은 편집본이며 공통 시각 기준이 없습니다. 동시 실행·동기화 오차·통신지연을 측정한 영상은 아닙니다. MP4 링크는 GitHub 파일 화면에서 열리며, 재생이 안 되면 다운로드할 수 있습니다.
+두 화면은 공통 시각 기준 없이 편집했습니다. 이 영상만으로 동시에 실행했는지는 알 수 없고, 동기화 오차와 통신지연도 측정하지 않았습니다. MP4 링크는 GitHub 파일 화면에서 열리며, 재생이 안 되면 다운로드할 수 있습니다.
 
 ![MoveIt2 궤적에서 joint_names를 변환해 Gazebo의 arm_0_joint_1부터 7과 Kinova의 joint_1부터 7로 분배하는 흐름](assets/trajectory-routing.png)
 
-토픽 이름과 메시지 필드를 나눠 확인했습니다. `DisplayTrajectory`에서 첫 `JointTrajectory`를 꺼내고, 관절 순서·궤적 점을 유지하며 목적지에 맞는 접두어를 적용했습니다. [메시지 규칙과 실패 입력 검사](src/eps_mirror/routing.py)
+토픽 이름과 메시지 필드를 나눠 확인했습니다. `DisplayTrajectory`에서 첫 `JointTrajectory`를 꺼내고, 관절 순서와 궤적 점은 그대로 두고 보낼 곳에 맞게 접두어를 바꿨습니다. [메시지 규칙과 실패 입력 검사](src/eps_mirror/routing.py)
 
 ## 내 담당과 팀의 범위
 
@@ -35,11 +35,11 @@ Ridgeback + Kinova 프로젝트에서 **계획 궤적을 Gazebo와 실물 Kinova
 | 본인 | 환경 구성, Kinova 명령·실행 확인, 결합 시뮬레이션, 변환·분배 노드, Setup Guide |
 | 팀 | 모바일 매니퓰레이터 요구사항·시나리오, 프로젝트 관리·공동 보고서, 통합 방향 |
 | 팀원 제안 | `/display_planned_path`를 궤적 입력으로 활용 |
-| AI 활용 | 코드 초안 생성에 활용. 본인은 구조·인터페이스를 검토하고 실행 결과를 대조·수정 |
+| AI 활용 | 코드 초안을 만드는 데 사용. 본인은 구조와 인터페이스를 살펴보고 실행 결과와 맞지 않는 부분을 수정 |
 
-Rolling에서 사용한 Clearpath 구성의 크래시를 근거로 Jazzy 전환을 제안했습니다. 결합 모델은 구성요소를 하나씩 빼고 넣어 안정 설정을 찾았습니다. [환경 선택과 문제 분리 과정](docs/engineering-notes.md)
+Rolling에서 사용한 Clearpath 구성에 크래시가 나서 Jazzy로 바꾸자고 제안했습니다. 결합 모델은 구성요소를 하나씩 빼고 넣어 안정 설정을 찾았습니다. [환경 선택과 문제 분리 과정](docs/engineering-notes.md)
 
-물리 Ridgeback의 배터리 문제로 **전체 실물 통합은 완료하지 못했습니다.** 검증 대상을 결합 Gazebo 모델과 실물 Kinova 단독으로 조정했고, LiDAR 플러그인 문제도 남았습니다. [당시 확인 범위](docs/results.md)
+물리 Ridgeback의 배터리 문제로 **전체 실물 통합은 완료하지 못했습니다.** 이후에는 결합 Gazebo 모델과 실물 Kinova 팔 단독의 동작까지 확인했습니다. LiDAR 플러그인 문제도 해결하지 못했습니다. [당시 확인한 동작](docs/results.md)
 
 ## 코드로 더 보기
 
@@ -54,6 +54,6 @@ cd projects/eps-mirror-node
 python -m unittest discover -s tests -v
 ```
 
-현재 코드는 **2026-09 공개 준비 유지보수본**입니다. 패키징·입력 검사·실물 출력 기본 비활성화와 테스트를 추가했습니다. Python 계층은 검사했으며 ROS2·실물 재시험은 하지 않았습니다. 당시 실행과 후속 수정은 [변경 범위](docs/maintenance.md)에서 구분합니다.
+**2026-09에 공개용으로 정리하면서 코드를 수정했습니다.** 패키징·입력 검사·테스트를 추가하고, 기본 설정에서는 실물로 명령을 보내지 않도록 했습니다. Python 테스트는 실행했지만 이 수정본으로 ROS2와 실물 로봇을 다시 실행하지는 않았습니다. 당시 코드에서 바꾼 점은 [코드 정리 내용](docs/maintenance.md)에 적었습니다.
 
 [당시 코드와 이력](https://github.com/CHOI-HYOJUN-kr/eps-mirror-node) · [출처·MIT 적용 범위](SOURCES.md) · [다른 프로젝트](../../README.md)
