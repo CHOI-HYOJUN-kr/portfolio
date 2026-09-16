@@ -16,13 +16,13 @@ Ridgeback + Kinova 프로젝트에서 **계획한 궤적을 Gazebo와 실물 Kin
 
 <a name="demo"></a>
 
-**왼쪽은 실물 Kinova, 오른쪽은 Gazebo 결합 모델**입니다. 기존 데모와 같은 시퀀스의 16초를 발췌하고, 두 팔이 보이도록 화면을 확대했습니다.
+**왼쪽은 실물 Kinova, 오른쪽은 Gazebo 결합 모델**입니다. 기존 데모와 같은 동작 시퀀스에서 16초 구간을 발췌하고, 두 팔이 보이도록 화면을 확대했습니다.
 
 [![실물 팔과 Gazebo 결합 모델의 16초 동작. 원본 편집 영상 기준 1배속](assets/kinova-preview.gif)](assets/kinova-demo-1x.mp4)
 
 [MP4 · 16초 · 원본 편집 속도 · 무음](assets/kinova-demo-1x.mp4) · [정지 화면](assets/kinova-overview.jpg)
 
-두 화면은 공통 시각 기준 없이 편집했습니다. 이 영상만으로 동시에 실행했는지는 알 수 없고, 동기화 오차와 통신지연도 측정하지 않았습니다. MP4 링크는 GitHub 파일 화면에서 열리며, 재생이 안 되면 다운로드할 수 있습니다.
+두 화면을 편집할 때 공통된 시간 기준을 사용하지 않았습니다. 이 영상만으로 동시에 실행했는지는 알 수 없고, 동기화 오차와 통신지연도 측정하지 않았습니다. MP4 링크는 GitHub 파일 화면에서 열리며, 재생이 안 되면 다운로드할 수 있습니다.
 
 ![MoveIt2 궤적에서 joint_names를 변환해 Gazebo의 arm_0_joint_1부터 7과 Kinova의 joint_1부터 7로 분배하는 흐름](assets/trajectory-routing.png)
 
@@ -43,7 +43,7 @@ Rolling에서 Clearpath 구성을 실행할 때 크래시가 발생해 Jazzy로 
 
 ## 코드로 더 보기
 
-1. [routing.py](src/eps_mirror/routing.py): 관절명·배열 길이·시간 값 검사와 변환.
+1. [routing.py](src/eps_mirror/routing.py): 관절명·배열 길이·시간 값을 검사하고 관절명을 변환합니다.
 2. [mirror_node.py](src/eps_mirror/mirror_node.py): ROS2 입출력과 simulation/real 발행 분기.
 3. [running.md](docs/running.md): 설치와 simulation-only 기본 실행.
 
