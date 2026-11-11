@@ -94,3 +94,11 @@
 !/projects/eps-mirror-node/src/eps_mirror/routing.py
 !/projects/eps-mirror-node/tests/test_output_gates.py
 !/projects/eps-mirror-node/tests/test_routing.py
+
+# Vehicle mass estimation: results page and chart only (no code, data or manuscript)
+!/projects/Vehicle-Mass-Estimation/
+/projects/Vehicle-Mass-Estimation/*
+!/projects/Vehicle-Mass-Estimation/README.md
+!/projects/Vehicle-Mass-Estimation/figures/
+/projects/Vehicle-Mass-Estimation/figures/*
+!/projects/Vehicle-Mass-Estimation/figures/rmse-comparison.png
