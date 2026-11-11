@@ -6,7 +6,7 @@
 
 - **담당:** 자동·수동 시퀀스와 위치결정, HMI 화면 6개, 오류 표시와 작업 재개 기능을 구현했습니다.
 - **문제 → 변경:** 8번째 적재가 실패했을 때 어느 단계에서 문제가 생겼는지 찾기 어려워, STEP과 완료 조건을 기준으로 시퀀스를 다시 구성했습니다.
-- **검증 결과:** 순차·지그재그 방식으로 각각 8개를 적재했고, 중단 후에는 수량과 인덱스를 유지한 채 작업을 재개했습니다.
+- **검증 결과:** 순차·지그재그 방식으로 각각 8개를 적재했고, 중단 후에는 수량과 인덱스를 유지한 채 작업을 재개했습니다. 공급과 서보 이동을 겹친 뒤 보고서에 기록한 8개 생산 시간은 **12:00 → 10:25**(13.2% 단축)입니다.
 
 [13초 동작 미리보기](#demo) · [제어 구조](docs/control-design.md) · [결과와 영상](docs/results.md) · [English](#english-overview)
 
@@ -59,7 +59,7 @@ An individual coursework project controlling an educational MPS from feeding to 
 
 When the eighth part failed to reach its position, I could not easily find which step had caused the problem. I rebuilt the sequence around steps and completion conditions. I ran feeding and travel to the pick position together, then waited for feeding, conveyor stabilization and servo travel to finish before picking. I separated Reset from Resume. Resume kept the completed count and stack index, with operator checks and manual repositioning before restart.
 
-I checked sequential and zigzag eight-part stacking and restart on the physical training machine. The demo shows four labeled excerpts, and the MP4 keeps the original speed. The report includes a timing comparison, but I could not check the original timing records or repeat conditions. These classroom results do not show production-line performance. X2 blocks new commands in software; I did not test servo deceleration or hardware safety functions.
+I checked sequential and zigzag eight-part stacking and restart on the physical training machine. The demo shows four labeled excerpts, and the MP4 keeps the original speed. The report records 12:00 → 10:25 for eight parts (13.2% shorter); the original timing records and repeat conditions are not included in this repository. These classroom results do not show production-line performance. X2 blocks new commands in software; I did not test servo deceleration or hardware safety functions.
 
 </details>
 
