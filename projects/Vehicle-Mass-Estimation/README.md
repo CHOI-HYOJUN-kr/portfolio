@@ -6,17 +6,19 @@
 
 - **담당:** 기존 추정기 재현, 주행 데이터 설계, DNN 학습과 비교를 맡았습니다.
 - **문제 → 판단:** 기존 보정 맵은 선회와 노면 기복을 구분하지 못했습니다. 그래서 차체의 횡·수직 운동 신호를 DNN 입력에 더했습니다.
-- **최종 평가:** 학습과 모델 선택에 쓰지 않은 주행에서 질량추정 오차(RMSE)를 기존 맵보다 **50.2%** 낮췄습니다(**48.9 → 24.4 kg**).
+- **최종 평가:** 학습과 모델 선택에 쓰지 않은 시험 시나리오 84개를 질량 4종으로 주행한 336회에서 질량추정 오차(RMSE)를 기존 맵보다 **50.5%** 낮췄습니다(**48.8 → 24.2 kg**).
 
 [English](#english-overview)
 
-![최종 평가 주행의 질량추정 RMSE. 기존 보정 맵 48.9 kg, 같은 입력 3개 DNN 32.0 kg, 입력 8개 DNN 24.4 kg. DNN은 5개 모델 평균이고, 범위는 30.9–32.8 kg와 23.2–26.9 kg](figures/rmse-comparison.png)
+![최종 평가 주행의 질량추정 RMSE. 기존 보정 맵 48.8 kg, 같은 입력 3개 DNN 31.3 kg, 입력 8개 DNN 24.2 kg. DNN은 5개 모델 평균이고, 8입력 모델별 범위는 23.2–25.5 kg](figures/rmse-comparison.png)
 
 ## 무엇을 바꿨는가
 
 **1. 추정기와 센서 신호부터 확인**
 
-AI 학습에 앞서 추정기의 물리 모델과 센서 신호의 관계를 먼저 확인했습니다. CarSim의 피치·롤 응답을 분석해 가속도 보정을 종·횡·수직 방향으로 확장했고, 센서 신호의 의미와 단위, 부호를 확인해 추정기 입력을 구성했습니다.
+AI 학습에 앞서 추정기의 물리 모델과 센서 신호의 관계를 먼저 확인했습니다. 종가속도의 피치 보상 모델에 기준 피치를 더해 CarSim 주행에서 다시 식별했고, 센서 신호의 의미와 단위, 부호를 확인해 추정기 입력을 구성했습니다.
+
+횡가속도와 수직가속도는 처음에 피치·롤로 정밀하게 보정한 값을 넣으려 했습니다. 보정값, 중력만 뺀 센서값, 순수 센서값을 각각 학습해 비교해 보니 전체 오차는 비슷했고, 주행 후반 25% 구간에서는 중력만 뺀 센서값의 오차가 가장 작았습니다(검증 주행 298개, 12.5 / 11.2 / 14.5 kg). 그래서 최종 모델에는 보정 없이 센서값을 쓰고, 수직가속도는 중력만 뺐습니다.
 
 **2. 주행 조건 설계와 데이터 분리**
 
@@ -28,17 +30,17 @@ AI 학습에 앞서 추정기의 물리 모델과 센서 신호의 관계를 먼
 
 | 방식 | 입력 | 최종 평가 RMSE |
 | --- | --- | ---: |
-| 기존 보정 맵 (기존 논문 방식 재현) | 기준 | 48.9 kg |
-| DNN, 입력 3개 | 맵과 같은 입력 | 32.0 kg |
-| DNN, 입력 8개 | + 차체 횡·수직 운동 신호 | **24.4 kg** |
+| 기존 보정 맵 (기존 논문 방식 재현) | 기준 | 48.8 kg |
+| DNN, 입력 3개 | 맵과 같은 입력 | 31.3 kg |
+| DNN, 입력 8개 | + 횡가속도, 수직가속도, 휠속, 조향각, 피치 각속도 | **24.2 kg** |
 
 조건별로 오차를 나눠 보니, 맵은 노면 기복과 복합 주행에서 약했습니다. 그래서 이를 반영할 수 있도록 횡·수직 운동 신호를 입력에 더했습니다.
 
 ## 검증 방법
 
 - 검증 주행에서 고른 모델을 바꾸지 않고 그대로 최종 평가에 적용했습니다.
-- 초기값이 다른 5개 모델에서 모두 8입력이 3입력보다 오차가 작았습니다(23.2–26.9 kg vs 30.9–32.8 kg, 두 범위가 겹치지 않음).
-- RMSE는 초기 추정값 1,600 kg에서 시작해, 실제 질량 4가지의 최종 평가 주행에서 계산했습니다. 모델·질량·주행 조건에 같은 가중치를 두고 평균했습니다.
+- 초기값이 다른 5개 모델의 8입력 오차는 23.2–25.5 kg으로, 모두 3입력 평균(31.3 kg)보다 작았습니다.
+- RMSE는 초기 추정값 1,600 kg에서 시작해, 실제 질량 4가지의 최종 평가 주행에서 출발 3초 이후 구간으로 계산했습니다. 모델·질량·주행 조건에 같은 가중치를 두고 평균했습니다. 데이터는 시나리오 555개를 학습 322개, 검증 149개, 시험 84개로 나눴습니다.
 - Baseline은 기존 논문의 보정 맵을 같은 주행 데이터에 재현해 평가한 값입니다. 논문에 실린 수치와는 별개입니다.
 - 반복 계산 병목을 고쳐 학습 실행 속도를 6.23배 높였습니다. 기준 구현을 먼저 만들어 두고, 빠르게 바꾼 뒤에도 결과가 같은지 대조했습니다.
 
@@ -53,9 +55,9 @@ AI 학습에 앞서 추정기의 물리 모델과 센서 신호의 관계를 먼
 
 Undergraduate research at the Vehicle Systems and Control Laboratory (VSCL), KOREATECH, since August 2026.
 
-I reproduced a physics-based vehicle mass estimator in Python using CarSim data and extended its tilt correction to the longitudinal, lateral and vertical axes after checking pitch and roll responses. I designed driving scenarios (grades, cornering, lane changes, stop-and-go) and split the data into training, validation and final test sets from the start.
+I reproduced a physics-based vehicle mass estimator in Python using CarSim data and re-identified the pitch compensation of the longitudinal acceleration. For the added lateral and vertical accelerations I compared precisely compensated values, gravity-removed sensor values and raw sensor values; overall error was similar, and the gravity-removed sensor values gave the lowest error in the last 25% of the drives, so the final model uses uncompensated sensor values. I designed driving scenarios (grades, cornering, lane changes, stop-and-go) and split the data into training, validation and final test sets from the start.
 
-I replaced the baseline's hand-tuned correction map with a DNN trained in PyTorch. Because the map could not distinguish cornering and road undulation, I added the vehicle body's lateral and vertical motion signals as inputs. On test drives kept out of training and model selection, RMSE dropped by 50.2% compared with the map (48.9 → 24.4 kg). A DNN using the same three inputs as the map reached 32.0 kg. Across five models with different initializations, the eight-input DNN was better in every case (23.2–26.9 vs 30.9–32.8 kg).
+I replaced the baseline's hand-tuned correction map with a DNN trained in PyTorch. Because the map could not distinguish cornering and road undulation, I added the vehicle body's lateral and vertical motion signals as inputs. On 336 test drives (84 held-out scenarios × 4 vehicle masses), RMSE dropped by 50.5% compared with the map (48.8 → 24.2 kg). A DNN using the same three inputs as the map reached 31.3 kg. Across five models with different initializations, the eight-input DNN ranged from 23.2 to 25.5 kg.
 
 Research code, data and the manuscript are not included; this page shows results only. All results come from CarSim simulations, not vehicle tests.
 
